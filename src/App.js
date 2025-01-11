@@ -1,16 +1,10 @@
 import React, {useState} from 'react';
-import { UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
-import {Button, Input, Layout, theme} from 'antd';
+import {Button, Input, Layout, message, theme} from 'antd';
 import { Card, Col, Row } from 'antd';
 import axios from 'axios';
+import CadastroModal from "./Component/Cadastro/ModalCadastro";
 
-const { Header, Content, Footer, Sider } = Layout;
-
-const data = [
-    { nome: 'Ponto A', pointx: 10, pointy: 20 },
-    { nome: 'Ponto B', pointx: 30, pointy: 40 },
-    { nome: 'Ponto C', pointx: 50, pointy: 60 },
-];
+const { Header, Content, Footer} = Layout;
 
 const App = () => {
     const {
@@ -22,6 +16,20 @@ const App = () => {
     const [pointX, setPointX] = useState('');
     const [pointY, setPointY] = useState('');
     const [raio, setRaio] = useState('');
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const showModal = () => {
+        setIsModalVisible(true);
+    };
+
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    };
+
+    const handleOk = () => {
+        console.log('Cadastro realizado com sucesso!');
+    };
 
     const handleSearch = () => {
         const params = new URLSearchParams({
@@ -36,24 +44,29 @@ const App = () => {
                 setPoints(response.data);
             })
             .catch(error => {
+                message.error(`Ocorreu um erro ao buscar pontos próximos! %s`,error).then(r => {});
                 console.log(error);
             });
     };
 
-    const handleNewPoint = () => {
+    const handleNewPoint = (name, pointX, pointY) => {
         const data = {
-            name: 'teste',
-            pointX: 2,
-            pointY: 3,
+            name: name,
+            pointX: pointX,
+            pointY: pointY,
         }
 
         axios.post('http://localhost:3000/',data)
             .then(response => {
-                setData(response.data);
+                console.log(response.data);
+                message.success(`Cadastro realizado com sucesso! Nome: ${name}, X: ${pointX}, Y: ${pointY}`).then(r => {});
             })
             .catch(error => {
+                message.error(`Ocorreu um erro ao tentar cadastrar! %s`,error).then(r => {});
                 console.log(error);
             });
+
+        setIsModalVisible(false);
     }
 
     return (
@@ -109,10 +122,15 @@ const App = () => {
                             borderRadius: borderRadiusLG,
                         }}
                     >
+                        <CadastroModal
+                            visible={isModalVisible}
+                            onCancel={handleCancel}
+                            onOk={handleNewPoint}
+                        />
                         <Row gutter={16} style={{ padding: '16px' }}>
                             <Col span={8}>
                                 <Card
-                                    onClick={handleNewPoint}
+                                    onClick={showModal}
                                     className="card-hover"
                                     style={{ backgroundColor: '#FFDDC1', color: 'white' }}
                                     title="Clique para adicionar novo ponto" bordered={false}

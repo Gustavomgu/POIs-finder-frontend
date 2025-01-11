@@ -1,15 +1,10 @@
 import React, {useState} from 'react';
 import { UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
-import {Button, Input, Layout, Menu, theme} from 'antd';
+import {Button, Input, Layout, theme} from 'antd';
 import { Card, Col, Row } from 'antd';
+import axios from 'axios';
+
 const { Header, Content, Footer, Sider } = Layout;
-const items = [UserOutlined, VideoCameraOutlined, UploadOutlined, UserOutlined].map(
-    (icon, index) => ({
-        key: String(index + 1),
-        icon: React.createElement(icon),
-        label: `nav ${index + 1}`,
-    }),
-);
 
 const data = [
     { nome: 'Ponto A', pointx: 10, pointy: 20 },
@@ -22,16 +17,43 @@ const App = () => {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
 
+    const [points, setPoints] = useState([]);
+
     const [pointX, setPointX] = useState('');
     const [pointY, setPointY] = useState('');
     const [raio, setRaio] = useState('');
 
     const handleSearch = () => {
-        console.log('Pesquisando com:', { pointX, pointY, raio });
+        const params = new URLSearchParams({
+            pointX: pointX,
+            pointY: pointY,
+            radius: raio
+        });
+
+        axios.get(`http://localhost:3000/GetAllClose?${params.toString()}`)
+            .then(response => {
+                console.log("Resposta da API ", response.data);
+                setPoints(response.data);
+            })
+            .catch(error => {
+                console.log(error);
+            });
     };
 
     const handleNewPoint = () => {
-        console.log("Criando um novo card");
+        const data = {
+            name: 'teste',
+            pointX: 2,
+            pointY: 3,
+        }
+
+        axios.post('http://localhost:3000/',data)
+            .then(response => {
+                setData(response.data);
+            })
+            .catch(error => {
+                console.log(error);
+            });
     }
 
     return (
@@ -101,14 +123,14 @@ const App = () => {
                             </Col>
                         </Row>
                         <Row gutter={16} style={{ padding: '16px' }}>
-                            {data.map((item, index) => (
+                            {points.map((item, index) => (
                                 <Col key={index} span={8}>
                                     <Card
-                                        style={{ backgroundColor: '#FFDDC1', color: 'white' }}
-                                        title={item.nome} bordered={false}
+                                        style={{ margin: '5px', backgroundColor: '#FFDDC1', color: 'white' }}
+                                        title={item.name} bordered={false}
                                     >
-                                        <p style={{fontWeight: 'bold', color: 'black'}} >Ponto X: {item.pointx}</p>
-                                        <p style={{fontWeight: 'bold', color: 'black'}}>Ponto Y: {item.pointy}</p>
+                                        <p style={{fontWeight: 'bold', color: 'black'}} >Ponto X: {item.pointX}</p>
+                                        <p style={{fontWeight: 'bold', color: 'black'}}>Ponto Y: {item.pointY}</p>
                                     </Card>
                                 </Col>
                             ))}

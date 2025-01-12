@@ -13,6 +13,10 @@ RUN npm install
 
 EXPOSE 3000
 
-WORKDIR /app/src
+RUN chmod +x start-react.sh
 
-CMD ["npm", "start"]
+CMD ["./start-react.sh"]
+
+# WORKDIR /app/src
+
+# CMD ["npm", "start"]

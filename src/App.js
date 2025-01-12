@@ -11,6 +11,8 @@ const App = () => {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
 
+    const URL = process.env.REACT_APP_API_URL;
+
     const [points, setPoints] = useState([]);
 
     const [pointX, setPointX] = useState('');
@@ -27,10 +29,6 @@ const App = () => {
         setIsModalVisible(false);
     };
 
-    const handleOk = () => {
-        console.log('Cadastro realizado com sucesso!');
-    };
-
     const handleSearch = () => {
         const params = new URLSearchParams({
             pointX: pointX,
@@ -38,13 +36,14 @@ const App = () => {
             radius: raio
         });
 
-        axios.get(`http://localhost:3000/GetAllClose?${params.toString()}`)
+        console.log('URL de consulta : ' + `${URL}/GetAllClose?${params.toString()}`)
+        axios.get(`${URL}/GetAllClose?${params.toString()}`)
             .then(response => {
                 console.log("Resposta da API ", response.data);
                 setPoints(response.data);
             })
             .catch(error => {
-                message.error(`Ocorreu um erro ao buscar pontos próximos! %s`,error).then(r => {});
+                message.error(`Ocorreu um erro ao buscar pontos próximos!`,error).then(r => {});
                 console.log(error);
             });
     };
@@ -56,7 +55,7 @@ const App = () => {
             pointY: pointY,
         }
 
-        axios.post('http://localhost:3000/',data)
+        axios.post(URL,data)
             .then(response => {
                 console.log(response.data);
                 message.success(`Cadastro realizado com sucesso! Nome: ${name}, X: ${pointX}, Y: ${pointY}`).then(r => {});
@@ -160,7 +159,7 @@ const App = () => {
                         textAlign: 'center',
                     }}
                 >
-                    Ant Design ©{new Date().getFullYear()} Created by Ant UED
+                    Ache o seus pontos de interesse favoritos
                 </Footer>
             </Layout>
         </Layout>

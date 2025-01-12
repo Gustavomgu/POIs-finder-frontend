@@ -43,7 +43,7 @@ const App = () => {
                 setPoints(response.data);
             })
             .catch(error => {
-                message.error(`Ocorreu um erro ao buscar pontos próximos!`,error).then(r => {});
+                message.error('Ocorreu um erro ao buscar pontos próximos! ' + error,1).then(r => {});
                 console.log(error);
             });
     };
@@ -61,7 +61,7 @@ const App = () => {
                 message.success(`Cadastro realizado com sucesso! Nome: ${name}, X: ${pointX}, Y: ${pointY}`).then(r => {});
             })
             .catch(error => {
-                message.error(`Ocorreu um erro ao tentar cadastrar! %s`,error).then(r => {});
+                message.error('Ocorreu um erro ao tentar cadastrar! ' + error,1).then(r => {});
                 console.log(error);
             });
 
